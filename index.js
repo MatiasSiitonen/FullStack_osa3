@@ -33,6 +33,12 @@ app.get('/api/info', (req, res) => {
     res.send(`Phonebook has info for ${length} people <br><br>${date}`)
 })
 
+app.get('/api/persons/:id', (req, res) => {
+    const id = Number(req.params.id)
+    const person = persons.find(person => person.id === id)
+    res.send(person)
+})
+
 
 const PORT = 3001
 app.listen(PORT, () => {
