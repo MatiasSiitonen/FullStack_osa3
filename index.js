@@ -3,8 +3,13 @@ const morgan = require('morgan')
 const app = express()
 
 app.use(express.json())
-app.use(morgan('tiny'))
+app.use(morgan((':method :url :status :res[content-length] - :response-time ms :body')))
 
+morgan.token('body', (req, res) => {
+    return [
+        JSON.stringify(req.body)
+    ]
+})
 let persons = [
     {
         name: "Arto Hellas",
@@ -73,12 +78,12 @@ app.post('/api/persons/', (req, res) => {
 
 
     const newPerson = {
-    name: body.name,
-    number: body.number,
-    id: Math.floor(Math.random() * 1000)
-}
-persons = persons.concat(newPerson)
-res.json(newPerson)
+        name: body.name,
+        number: body.number,
+        id: Math.floor(Math.random() * 1000)
+    }
+    persons = persons.concat(newPerson)
+    res.json(newPerson)
 
 
 })
