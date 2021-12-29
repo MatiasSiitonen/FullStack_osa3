@@ -2,6 +2,9 @@ const express = require('express')
 const morgan = require('morgan')
 const app = express()
 const cors = require('cors')
+require('dotenv').config()
+const Person = require('./models/person')
+
 
 
 app.use(express.static('build'))
@@ -14,31 +17,13 @@ morgan.token('body', (req, res) => {
         JSON.stringify(req.body)
     ]
 })
-let persons = [
-    {
-        name: "Arto Hellas",
-        number: "040-123456",
-        id: 1
-    },
-    {
-        name: "Ada Lovelace",
-        number: "39-44-5323523",
-        id: 2
-    },
-    {
-        name: "Dan Abramov",
-        number: "12-43-234345",
-        id: 3
-    }
-
-]
 
 
-
-app.get('/api/persons', (req, res) => {
-    res.json(persons)
-})
-
+app.get('/api/persons', (request, response) => {
+    Person.find({}).then(people => {
+      response.json(people)
+    })
+  })
 app.get('/api/info', (req, res) => {
     const date = new Date()
     const length = persons.length
@@ -58,40 +43,24 @@ app.delete('/api/persons/:id', (req, res) => {
 
 })
 
-app.post('/api/persons/', (req, res) => {
-    const body = req.body
-    const names = persons.map(person => person.name)
-
-
-
-    if (!body.number) {
-        return res.status(400).json({
-            error: 'number missing'
-        })
+app.post('/api/persons', (request, response) => {
+    const body = request.body
+  
+    if (body.name === undefined || body.number === undefined) {
+      return response.status(400).json({ error: 'name or number missing' })
     }
-    if (!body.name) {
-        return res.status(400).json({
-            error: 'name missing'
-        })
-    }
-    if (names.includes(body.name)) {
-        return res.status(400).json({
-            error: 'name must be unique'
-        })
-    }
-
-
-    const newPerson = {
-        name: body.name,
-        number: body.number,
-        id: Math.floor(Math.random() * 1000)
-    }
-    persons = persons.concat(newPerson)
-    res.json(newPerson)
-
-
-})
-
+  
+    const person = new Person({
+      name: body.name,
+      number: body.number,
+      important: body.important || false,
+      date: new Date(),
+    })
+  
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
+  })
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {

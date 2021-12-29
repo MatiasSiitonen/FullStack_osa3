@@ -15,7 +15,7 @@ const personName = process.argv[3]
 const personNumber = process.argv[4]
 
 const url =
-    `mongodb+srv://fullstack:${password}@cluster0.00s32.mongodb.net/Persons?retryWrites=true&w=majority`
+    `mongodb+srv://fullstack:${password}@cluster0.00s32.mongodb.net/Numbers?retryWrites=true&w=majority`
 
 mongoose.connect(url)
 
