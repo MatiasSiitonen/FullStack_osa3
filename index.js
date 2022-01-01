@@ -4,6 +4,8 @@ const app = express()
 const cors = require('cors')
 require('dotenv').config()
 const Person = require('./models/person')
+const { update } = require('./models/person')
+const person = require('./models/person')
 
 
 
@@ -36,14 +38,20 @@ app.get('/api/persons', (request, response) => {
 })
 app.get('/api/info', (req, res) => {
   const date = new Date()
-  const length = persons.length
+  const length = Person.length
   res.send(`Phonebook has info for ${length} people <br><br>${date}`)
 })
 
-app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = persons.find(person => person.id === id)
-  res.send(person)
+app.get('/api/persons/:id', (req, res, next) => {
+  Person.findById(req.params.id)
+    .then(person => {
+      if (person) {
+        res.json(person)
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (req, res, next) => {
@@ -53,22 +61,8 @@ app.delete('/api/persons/:id', (req, res, next) => {
     })
     .catch(error => next(error))
 
-})
-
-app.put('/api/persons/:id', (req, res, next) => {
-  const body = req.body
-  const updatedPerson = {
-    name: body.name,
-    number: body.number,
-    important: body.important
-  }
-
-  Person.findByIdAndUpdate(req.params.id, updatedPerson, { new: true })
-  .then(person => {
-    res.json(person)
   })
-  .catch(error => next(error))
-})
+
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
