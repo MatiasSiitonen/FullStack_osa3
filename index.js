@@ -4,10 +4,6 @@ const app = express()
 const cors = require('cors')
 require('dotenv').config()
 const Person = require('./models/person')
-const { update } = require('./models/person')
-const person = require('./models/person')
-
-
 
 app.use(express.static('build'))
 app.use(cors())
@@ -27,7 +23,7 @@ const errorHandler = (error, request, response, next) => {
 }
 
 
-morgan.token('body', (req, res) => {
+morgan.token('body', (req) => {
   return [
     JSON.stringify(req.body)
   ]
@@ -59,7 +55,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndDelete(req.params.id)
-    .then(result => {
+    .then(() => {
       res.status(204).end()
     })
     .catch(error => next(error))
@@ -84,7 +80,7 @@ app.post('/api/persons', (request, response, next) => {
   person.save().then(savedPerson => {
     response.json(savedPerson)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 
 })
 
