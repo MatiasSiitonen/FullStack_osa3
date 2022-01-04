@@ -37,7 +37,7 @@ const person = new Person({
   important: true,
 })
 
-if (process.argv.length == 3) {
+if (process.argv.length === 3) {
   console.log('phonebook:')
   Person.find({}).then(result => {
     result.forEach(person => {
